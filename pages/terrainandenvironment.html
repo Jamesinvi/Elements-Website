@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <head>
+        <title>Terrain & Environment</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="../assets/css/main.css" />
+    </head>
+
+<body class="subpage">
+
+    <!-- Header -->
+    <header id="header">
+        <div class="logo"><a href="../index.html">Project <span>by JAMES KARRAN</span></a></div>
+        <a href="#menu">Menu</a>
+    </header>
+
+    <!-- Nav -->
+    <nav id="menu">
+        <ul class="links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="elements_page.html">About The Project</a></li>
+            <li><a href="terrainandenvironment.html">Terrain & Environment</a></li>
+            <li><a href="quarry.html">The Quarry</a></li>
+            <li><a href="interactibles.html">Interactibles</a></li>
+        </ul>
+    </nav>
+
+    <!-- One -->
+    <section id="One" class="wrapper style3">
+        <div class="inner">
+            <header class="align-center">
+                <p>Development Notes</p>
+                <h2>Terrain & Environment</h2>
+            </header>
+        </div>
+    </section>
+
+    <body>
+        <!-- Two -->
+        <section id="two" class="wrapper style">
+            <div class="inner">
+                <div class="box">
+                    <div class="content">
+                        <p>
+                            So, we're making a open world game here, so let's begin with getting a world toghether that
+                            fits our
+                            needs. Based on the idea of the
+                            four elements, we knew we had to have 4 zones the player would progress through, and after
+                            we charted a
+                            small universe bacgkround story
+                            we decided on a layout of the map. The software I used to generate the map is World Machine.
+                            There are
+                            newer and shinier tools but
+                            this one fit quite well.
+                        </p>
+                        <p> This is the result:</p>
+
+                        <img src="../media/elements_terrain.jpg" alt="not found" class="image fit">
+
+                        <p>
+                            Where the numbers are respectively:
+                            <ol>
+                                <li>Earth</li>
+                                <li>Fire</li>
+                                <li>Air</li>
+                                <li>Water</li>
+                            </ol>
+                            Now that looks pretty good but it wouldn't fit the flat shaded/low poly style we're going
+                            for. To
+                            achieve this, i bought
+                            a really handy tool
+                            from the unity asset store. After importing and playing around with the parameters, this is
+                            what we
+                            have:
+                        </p>
+
+                        <img src="../media/elements_terrain_unity.jpg" alt="not found" class="image fit">
+                        <img src="../media/elements_terrain_unity_close.jpg" alt="not found" class="image fit">
+
+                        <p>
+                            The tool uses a mesh instead of the standard terrain but thankfully automatically creates
+                            chunks and
+                            LODs for them (they are parametrised).
+                        </p>
+                        <h3>
+                            Terrain Vegetation & Rocks
+                        </h3>
+                        <p>
+                            I've looked for a lazy and easy solution for placing trees an rocks on a <b>mesh</b> and the
+                            only viable
+                            solution I came up with was using the Polybrush tool for Unity. This approach had two
+                            downsides:
+                            <ol>
+                                <li>Quite slow: requires to paint different trees and rocks all over the large terrain.
+                                </li>
+                                <li>The result can be good, but it heavily depends on your enviromental artist skills.
+                                </li>
+                            </ol>
+                            So naturally, being a better at programming, I decided to go with a custom script that
+                            places objects randomly
+                            based on slope and height at that particular point. These are the parameters:
+                        </p>
+
+                        <img src="../media/unity_placeObjects_script.jpg" alt="not found" class="image fit">
+
+                        <p>
+                            I use a curve to describe how likely it is for an object to spawn at increasing altitudes.
+                            The slope parameter on
+                            the other hand is the maximum slope at which the object can spawn. It's not perfect, but
+                            here are the results:
+                        </p>
+
+                        <img src="../media/unity_placeObjects_result_1.jpg" alt="not found" class="image fit">
+                        <img src="../media/unity_placeObjects_result_2.jpg" alt="not found" class="image fit">
+
+                        <p>
+                            Looking pretty good! It's time to look into some shaders (<b>Disclamer: I'm very new to
+                                shaders so my work here is pretty
+                                basic</b>). The first one we'll be doing is water, my approach here is basic vertex
+                            displacement: luckily Unity has surface
+                            shaders to help here. Surface shaders basically handle all the hard stuff for you so you can
+                            play around with shaders while
+                            still having proper lighting and reflections.
+                        </p>
+                        <p>
+                            The simplest approach for waves is <b>sine waves</b> so that's what we'll be doing. I modify
+                            the position of every vertex
+                            on the water plane based on their position multiplied by a sine wave (and a multitude of
+                            parameters to help changing the quality
+                            of the effect on the material itself). I generated a very simple normal map and added it to
+                            the shader and this is our first result:
+                        </p>
+
+                        <img src="../media/waves_1.gif" alt="not found" class="image fit">
+
+                        <p>
+                            The waves are animating but it looks a bit boring so I wanted to add something without
+                            making the shader very complex. The simplest
+                            thing that came up was a foam effect. This could be done better with a texture but I went
+                            with a simple color clipping technique.
+                            The end result is simple but effective:
+                        </p>
+
+                        <img src="../media/waves_2.gif" alt="not found" class="image fit">
+
+                        <p>
+                            Okay looking good! I'll be honest, I got a little bit carried away with vertex displacement
+                            shaders and decided to apply it to the trees
+                            to give the impression of the wind blowing. It's barely noticable while playing but having
+                            it doesn't hurt. This is how it looks like:
+
+                        </p>
+
+                        <img src="../media/trees_1.gif" alt="not found" class="image fit">
+
+                        <p>
+                            I guess it's now time to put it all toghether. I added proper rim lighting, some fog, and
+                            some post processing (was alrady there actually)
+                            and we get the final result for the Elements terrain and enviroment. Note that when 3D
+                            models will be added the terrain could be adjusted and
+                            the tree (and rock) placement algorithm could be re-run to get the updated version. Here's
+                            some screenshot of the final result:
+                        </p>
+
+                        <img src="../media/elements_terrain_end_result.jpg" alt="not found" class="image fit">
+                        <img src="../media/elements_terrain_end_result2.jpg" alt="not found" class="image fit">
+                        <img src="../media/elements_terrain_end_result3.jpg" alt="not found" class="image fit">
+                        <img src="../media/elements_terrain_end_result4.jpg" alt="not found" class="image fit">
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="container">
+                <ul class="icons">
+                    <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+                    <li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+                    <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+                    <li><a href="#" class="icon fa-envelope-o"><span class="label">Email</span></a></li>
+                </ul>
+            </div>
+            <div class="copyright">
+                &copy; Untitled. All rights reserved.
+            </div>
+        </footer>
+
+        <!-- Scripts -->
+        <script src="../assets/js/jquery.min.js"></script>
+        <script src="../assets/js/jquery.scrollex.min.js"></script>
+        <script src="../assets/js/skel.min.js"></script>
+        <script src="../assets/js/util.js"></script>
+        <script src="../assets/js/main.js"></script>
+
+    </body>
+
+</html>

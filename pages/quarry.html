@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>The Quarry</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+</head>
+
+<body class="subpage">
+
+    <!-- Header -->
+    <header id="header">
+        <div class="logo"><a href="../index.html">Project <span>by JAMES KARRAN</span></a></div>
+        <a href="#menu">Menu</a>
+    </header>
+
+    <!-- Nav -->
+    <nav id="menu">
+        <ul class="links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="elements_page.html">About The Project</a></li>
+            <li><a href="terrainandenvironment.html">Terrain & Environment</a></li>
+            <li><a href="quarry.html">The Quarry</a></li>
+            <li><a href="interactibles.html">Interactibles</a></li>
+        </ul>
+    </nav>
+
+    <!-- One -->
+    <section id="One" class="wrapper style3">
+        <div class="inner">
+            <header class="align-center">
+                <p>Development Notes</p>
+                <h2>The Quarry</h2>
+            </header>
+        </div>
+    </section>
+
+    <!-- Two -->
+    <section id="two" class="wrapper style">
+        <div class="inner">
+            <div class="box">
+                <div class="content">
+                    <p>
+                        We've been working on the layout of the entire earth zone and all of the specific "levels"
+                        contained in it.
+                        In this post, we'll be focusing on the Quarry Level. The earth zone is basically a small town
+                        sorrounded by ancient
+                        ruins and structures, including the Quarry, these will be the "levels". It is important to us to
+                        give a different palette and art style to
+                        these ancient buildings, we want the player to feel safe in the town and to not feel safe in the
+                        ruins. Swapping
+                        the palette and style helps achieve this and also makes sense lore-wise. Here's the layout of
+                        the Quarry:
+                    </p>
+                    <img src="../media/quarry_map.jpeg" alt="not found" class="image fit">
+                    <p>These screenshot are from one of the ruins levels and the main town respectively:</p>
+                    <img src="../media/earth_ruins.JPG" alt="not found" class="image fit">
+                    <img src="../media/earth_village.JPG" alt="not found" class="image fit">
+
+                    <h3>Reshaping the terrain for the Quarry</h3>
+                    <p>
+                        As stated in the previous post, if we need to change the terrain, we're gonna have to change the
+                        unity version
+                        of the standard terrain and then use a script to re-generate the faceted chunks. After doing
+                        this, this is what we get:
+                    </p>
+                    <img src="../media/quarry_1.jpg" alt="not found" class="image fit">
+                    <p>
+                        Since this is a pretty drastic change to a part of the terrain, we need to regenerate the
+                        texture so that it fits
+                        better with the new cliffs and slopes. To do this we export the raw terrain file into World
+                        Machine and re-generate
+                        the bitmap. We then go back into unity, generate the faceted chunks and apply the texture:
+                    </p>
+                    <img src="../media/quarry_2.jpg" alt="not found" class="image fit">
+                    <h3>
+                        Fine tuning the rock placement
+                    </h3>
+                    <p>
+                        The first change I made to the rock placement algorithm was using a Gaussian distribution for
+                        the size
+                        instead of a random number in the specified range. While that is a solid approach I ultimately
+                        decided to
+                        do things differently. The old version would scale the rocke based on the altitude: the higher
+                        up it was, the
+                        smaller it would be. This approach however had a problem:
+                    </p>
+                    <img src="../media/rock_diagram.jpg" alt="not found" class="image fit">
+                    <p>
+                        The algorihm would make Rock 2 bigger because it's much closer to sea level. That might seem
+                        like a good thing but
+                        in reality, Rock 1 shouldn't be much smaller than Rock 2 because locally, it's on a pretty high
+                        and steep cliff.
+                        The modified algorithm will check the sorroundings of every rock to find a local minimum (or low
+                        point) and scale the rock
+                        appropriately. It's pretty difficult to get a screenshot of the full range of sizes but here's
+                        what it looks like:
+                    </p>
+                    <img src="../media/rocks_new.jpg" alt="not found" class="image fit">
+                    <p>
+                        My rock and tree placement script has a way to delete all objects and trees but no way of
+                        deciding which to keep so I needed
+                        to find a way to make the rocks and trees I liked stick around. I decided to make all of these
+                        objects a child of the "level" object.
+                        This worked but I soon realised that if I was generating trees or rocks again for another
+                        section of the map, it would clutter all my other
+                        areas with new ones. To fix this, I decided to write a script that would destroy any tree or
+                        rock it would collide with assuming it wasn't
+                        part of the level itself:
+                    </p>
+                    <h3>Back to the Quarry</h3>
+                    <p>
+                        The next thing missing is lava, it's not so simple to pull off so what I did
+                        was to go to substance designer and generate a texture for it. Then I used shader magic to
+                        displace every vertex based on the
+                        color value of each pixel in the texture. The final touch was then to add a very slow and subtle
+                        movement using a simple sine function:
+                    </p>
+                    <img src="../media/quarry_3.jpg" alt="not found" class="image fit">
+                    <p>
+                        Now let's add the rocks and the trees. And voilà!
+                    </p>
+                    <img src="../media/quarry_4.jpg" alt="not found" class="image fit">
+                    <h3> Occlusion and frustrum culling</h3>
+                    <p>
+                        The eagle-eyed will have noticed that the terrain looks a lot sharper. That is simply because I
+                        upped the number of vertices of every chunk
+                        The all terrain is now a whopping 32 Million vertices. Naturally that is way more than we want
+                        to display on the screen at any given time
+                        and the LOD system is helping reduce that number by a lot. What we can do to reduce it even more
+                        is to add more levels of LOD (which are autmagically
+                        generated) and then start thinking about occlusion and frustrum culling.
+
+                    </p>
+                    <p>
+                        I discovered that Unity does this automatically without any work from my part so the only thing
+                        that's left is occlusion culling.
+                        Unity provides a pretty solid system of generating volumes that will appear/disappear based on
+                        the camera's visibility. What's left
+                        to do is to assign to every level a bounding box. This is useful because sometimes if the player
+                        goes inside a building, the game will
+                        cull everything because it doesn't understand what's supposed to be showing. Once that's fixed
+                        we're done!
+                        Here's what the camera was rendering before:
+                    </p>
+                    <img src="../media/675kTris.jpg" alt="not found" class="image fit">
+                    <p>
+                        and this is after:
+                    </p>
+                    <img src="../media/465kTris.jpg" alt="not found" class="image fit">
+                    <p>
+                        Notice the player is exactly in the same position in both cases. As you can see in the stats
+                        tab, we've reduced the number of
+                        triangles drawn by quite a lot. Basically the LOD systems takes it from around 10 million to
+                        700k and we then reduce that further
+                        by using occlusion culling. The improvement might seem small but remember it will get
+                        significantly bigger the more levels and objects
+                        there are.
+                    </p>
+                    <h3>
+                        What about gameplay?
+                    </h3>
+                    <p>
+                        If you've read these two posts you might think the gameplay is completely absent. In truth, it's
+                        mostly there, toghether with
+                        obstacles, UI, combat system and inventory system. I will be doing a dive through some of these
+                        in future posts while I work on
+                        making them more robust and feature rich. Until then, all I can give you is a very small peak:
+                    </p>
+                    <img src="../media/test.gif" alt="not found" class="image fit">
+                    <p>
+                        In case you're wondering, the moving platform DOES WORK correctly, I just missed cause I'm bad
+                        at my own game :) .
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="container">
+            <ul class="icons">
+                <li><a href="https://twitter.com/JamesInvi" class="icon fa-twitter"><span
+                            class="label">Twitter</span></a></li>
+                <li><a href="https://www.facebook.com/james.karran" class="icon fa-facebook"><span
+                            class="label">Facebook</span></a></li>
+                <li><a href="mailto:james.invi@gmail.com" class="icon fa-envelope-o"><span
+                            class="label">Email</span></a></li>
+            </ul>
+        </div>
+        <div class="copyright">
+            &copy; Untitled. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/skel.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+
+</body>
+
+</html>
