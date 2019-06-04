@@ -32,7 +32,7 @@
         <div class="inner">
             <header class="align-center">
                 <p>Development Notes</p>
-                <h2>Interactibles</h2>
+                <h2></h2>
             </header>
         </div>
     </section>
@@ -86,7 +86,45 @@
 
                     </p>
 
-                    <img src="../media/interactible_1.jpg" alt="not found" class="image fit">
+                    <pre>
+                        <code>
+                            public abstract class Interactible: MonoBehaviour {
+                                protected PlayerController player;
+                                protected PlayerStats playerStats;
+                                public string errorString;
+                                public UnityEvent onInteract;
+                                public ErrorTextManager errorText;
+                                [HideInInspector]
+                                public bool activated;
+                                virtual public void Interact() {
+                                    onInteract.Invoke();
+                                }
+                                public virtual void Start() {
+                                    errorText = FindObjectOfType<ErrorTextManager>();
+                                }
+                                public virtual void OnTriggerEnter(Collider other) {
+                                    //get the player controller and stats. Stats are required to check for the number of crystals collected.
+                                    //signals the player controller to show the interact GUI.
+                                    if (other.tag == "Player") {
+                            
+                                            player = GameMainManager.instance.player;
+                                            playerStats = GameMainManager.instance.playerStats;
+                                            player.interactFlag = true;
+                                            player.interactingWith = this;
+                                        }
+                                }
+                                public virtual void OnTriggerExit(Collider other) {
+                                    if (other.tag == "Player") {
+                                        player.interactFlag = false;
+                                        player.interactingWith = null;
+                                    }
+                                }
+                                public virtual void DisplayErrorString() {
+                                    errorText.ShowMessage(errorString);
+                                }
+                            }
+                        </code>
+                    </pre>
 
                     <p>
                         Now we need a class that extends the Interactible class. The first that came to mind and that I
@@ -96,7 +134,50 @@
                         to activate or disable the emission of the material it's on.
                     </p>
 
-                    <img src="../media/interactible_2.jpg" alt="not found" class="image fit">
+                    <pre>
+                        <code>
+                            public class InteractionSender : Interactible {
+                                public int earthCollectReq;
+                                public int fireCollectReq;
+                                public int airCollectReq;
+                                public int waterCollectReq;
+                                public float waitTime;
+                                EmissionActivator emissionActivator;
+                                Animator anim;
+                                public override void Start() {
+                                    base.Start();
+                                    anim = GetComponentInChildren<Animator>();
+                                    emissionActivator = GetComponent<EmissionActivator>();
+                                    errorString = "You need more crystals!";
+                                }
+                                public override void Interact() {
+                                    //check if the player is allowed to interact based on the number of crystals collected. if he has them then call the superclass.Interact()
+                                    if (CheckCrystals()) {
+                                        base.Interact();
+                                        activated = true;
+                                        //this code could be removed due to the unity events tied to the recievers. They could handle this but since it's pretty standard i'll leave it here.
+                                        if (anim != null) {
+                                            anim.SetTrigger("Active");
+                                        }
+                                        if (emissionActivator != null) {
+                                            emissionActivator.Activate();
+                                        }
+                                    } else {
+                                        DisplayErrorString();
+                                    }
+                                }
+                                private bool CheckCrystals() {
+                                    if (playerStats.earthCrystals >= earthCollectReq
+                                                   && playerStats.fireCrystals >= fireCollectReq
+                                                   && playerStats.airCrystals >= airCollectReq
+                                                   && playerStats.waterCrystals >= waterCollectReq) {
+                                        return true;
+                                    }
+                                    return false;
+                                }
+                            }
+                        </code>
+                    </pre>
 
                     <p>
                         I also implemented an Interaction Reciever class, I know it's slightly redundant but it helps
@@ -104,7 +185,25 @@
                         means that the recieving object isn't tied to the sender to recieve commands.
                     </p>
 
-                    <img src="../media/interactible_3.jpg" alt="not found" class="image fit">
+                    <pre>
+                        <code>
+                            public class InteractionReciever : MonoBehaviour {
+                                public UnityEvent onActivate;
+                                public UnityEvent onDisable;
+                                [HideInInspector]
+                                public bool active;
+                            
+                                public virtual void Activate() {
+                                    active = true;
+                                    onActivate.Invoke();
+                                }
+                                public virtual void Disable() {
+                                    active = false;
+                                    onDisable.Invoke();
+                                }
+                            }
+                            </code>
+                    </pre>
 
                     <h3>
                         Moving Platforms
@@ -117,71 +216,160 @@
                         in my beautiful artistic rendition, that's not what happens normally.
                     </p>
 
-                    <img src="../media/moving_platform_1.jpg" alt="not found" class="image fit">
+                    <<img src="../media/moving_platform_1.jpg" alt="not found" class="image fit">>
 
-                    <p>
-                        So basically we'll need another trigger collider to make the player a child of the moving
-                        platform so that the player won't fall off.
-                        Now onto the bigger problem: the movement itself.
-                        Here are the methods I tried to implement:
-                        <ol>
-                            <li>Linearly interpolating between two positions.</li>
-                            <li>Linearly interpolating between two Transforms </li>
-                            <li>Using fancy math to generate runtime curves to drive the platform </li>
-                            <li>Using a Coroutine to start the platform moving in one direction for a fixed amount of
-                                time and then firing a second one to reverse it</li>
-                        </ol>
-                    </p>
-                    <p>
-                        The first three methods have a big problem: versatility. For any given platform there is no way
-                        for it to go around in a circle, or move in
-                        any other pattern without having a long list of objects to interpolate between. The coroutine is
-                        a little better because the only thing that
-                        that drives the movement is time. This approach however, is very CPU intensive because it would
-                        be firing multiple coroutines (<strong>per platform</strong>).
+                        <p>
+                            So basically we'll need make the player controller scripts aware of what is moving towards
+                            or away from the player.
+                            Now onto the bigger problem: the movement itself.
+                            Here are the methods I tried to implement:
+                            <ol>
+                                <li>Linearly interpolating between two positions.</li>
+                                <li>Linearly interpolating between two Transforms </li>
+                                <li>Using fancy math to generate runtime curves to drive the platform </li>
+                                <li>Using a Coroutine to start the platform moving in one direction for a fixed amount
+                                    of
+                                    time and then firing a second one to reverse it</li>
+                            </ol>
+                        </p>
+                        <p>
+                            The first three methods have a big problem: versatility. For any given platform there is no
+                            way
+                            for it to go around in a circle, or move in
+                            any other pattern without having a long list of objects to interpolate between. The
+                            coroutine is
+                            a little better because the only thing that
+                            that drives the movement is time. This approach however, is very CPU intensive because it
+                            would
+                            be firing multiple coroutines (<strong>per platform</strong>).
 
-                        The best way to tackle this in my opinion is with animation, more specifically animation curves.
-                        AnimationCurve is a type of variable you can use in Unity that lets
-                        you specify any curve you want and then sample or modify it in the script. Here's the Moving
-                        platform class and the inspector view:
-                    </p>
+                            The best way to tackle this in my opinion is with animation, more specifically animation
+                            curves.
+                            AnimationCurve is a type of variable you can use in Unity that lets
+                            you specify any curve you want and then sample or modify it in the script. Here's the Moving
+                            platform class and the inspector view:
+                        </p>
 
-                    <img src="../media/moving_platform_3.jpg" alt="not found" class="image fit">
-                    <img src="../media/moving_platform_2.jpg" alt="not found" class="image fit">
+                        <pre>
+                            <code>
+                                public class MovingPlatform : InteractionReciever {
+                                    public enum PlatformType { Standard, Falling, Stepper };
+                                    public bool activateOnStart=true;
+                                    public float speed;
+                                    public AnimationCurve curve;
+                                    public Transform platform;
+                                    public Transform finalPos;
+                                    public Transform startPos;
+                                    public PlatformType platformType;
+                                    public Vector3 stepperDegrees;
+                                    private float curveTime;
+                                    private float curveProgress;
+                                    private bool running;
+                                    private Vector3 oldScale;
+                                    private Rigidbody rigidBody;
+                                    private Transform player;
+                                    private void Start() {
+                                        active = false;
+                                        ResetPosition();
+                                        if (activateOnStart) {
+                                            base.Activate();
+                                        }
+                                        rigidBody = GetComponentInChildren<Rigidbody>();
+                                        player = GameMainManager.instance.player.transform;
+                                    }
+                                    private void FixedUpdate() {
+                                        running=SetRunningState();
+                                        if (running && active) {
+                                            if (platformType == PlatformType.Standard) {
+                                                curveTime += Time.deltaTime * speed;
+                                                curveProgress = curve.Evaluate(curveTime);
+                                                rigidBody.MovePosition(Vector3.LerpUnclamped(startPos.position, finalPos.position, curveProgress));
+                                                rigidBody.MoveRotation(Quaternion.Slerp(startPos.rotation, finalPos.rotation, curveProgress));
+                                            }
+                                        }
+                                    }
+                                    private bool SetRunningState() {
+                                        float distance = Vector3.Distance(transform.position, player.position);
+                                        return distance > 150 ? false : true;
+                                    }
+                                    public void Move() {
+                                        if (platformType == PlatformType.Stepper) {
+                                            Step();
+                                        }
+                                    }
+                                    private void Step() {
+                                        StartCoroutine("MoveStep");
+                                    }
+                                    public IEnumerator MoveStep() {
+                                        curveTime = 0;
+                                        Vector3 rotTarget = platform.rotation.eulerAngles;
+                                        rotTarget += stepperDegrees;
+                                        curveProgress = curve.Evaluate(curveTime);
+                                        while (curveProgress < 1) {
+                                            rigidBody.MovePosition(Vector3.LerpUnclamped(startPos.position, finalPos.position, curveProgress));
+                                            rigidBody.MoveRotation(Quaternion.LerpUnclamped(startPos.rotation, Quaternion.Euler(rotTarget), curveProgress));
+                                            curveTime += Time.deltaTime * speed;
+                                            curveProgress = curve.Evaluate(curveTime);
+                                            yield return null;
+                                        }
+                                    }
+                                    public void ResetPosition() {
+                                        running = false;
+                                        platform.position = startPos.position;
+                                        curveTime = 0;
+                                        curveProgress = 0;
+                                    }
+                                    private void OnDrawGizmosSelected() {
+                                        Gizmos.color = Color.green;
+                                        Gizmos.DrawWireCube(startPos.position, platform.localScale);
+                                        Gizmos.color = Color.red;
+                                        Gizmos.DrawWireCube(finalPos.position, platform.localScale);
+                                    }
+                                
+                                }
+                            </code>
+                        </pre>
+                        <img src="../media/moving_platform_2.jpg" alt="not found" class="image fit">
 
-                    <p>
-                        Note that this class inherits from InteractionReciever so we can use the OnActivate event it
-                        inherits to tell the platform to move.
-                        It will then sample the AnimationCurve every frame to know where it's next position will be.
-                        After that it will interpolate between the
-                        initial position and the target position. Every AnimationCurve can be set to
-                        <ol>
-                            <li>Clamp: After the curve finishes, it will stay at that position forever</li>
-                            <li>Loop: After the curve finishes, will start again from the first value, looping forever.
-                            </li>
-                            <li>PingPong: After the curve finishes, it will play the animation backwards, looping
-                                forever </li>
-                        </ol>
-                        Most Platforms will be PingPong, but then I realised I could use the Clamped curve to make the
-                        doors open hiding the door under the terrain
-                        after the animation finishes.
-                    </p>
-                    <p>
-                        I also implemented a enum containing all the different types of a platform: Standard, Stepper,
-                        and Falling (more will be probabily added).
-                        Stepper is a platform that only move a fixed amount (or step) <strong>per activation</strong>,
-                        for example the player may have to orient
-                        some mirrors in the correct way to complete the level (more info coming in the future). Falling
-                        is pretty self-explanatory.
-                    </p>
-                    <h3>
-                        Conclusion
-                    </h3>
-                    <p>
-                        That pretty much covers it! Thank you for reading and I'll finish this post with some examples
-                        of how these platforms look in-game (note that
-                        any stuttering is only because these are gifs):
-                    </p>
+                        <p>
+                            Note that this class inherits from InteractionReciever so we can use the OnActivate event it
+                            inherits to tell the platform to move.
+                            It will then sample the AnimationCurve every frame to know where it's next position will be.
+                            After that it will interpolate between the
+                            initial position and the target position. Every AnimationCurve can be set to
+                            <ol>
+                                <li>Clamp: After the curve finishes, it will stay at that position forever</li>
+                                <li>Loop: After the curve finishes, will start again from the first value, looping
+                                    forever.
+                                </li>
+                                <li>PingPong: After the curve finishes, it will play the animation backwards, looping
+                                    forever </li>
+                            </ol>
+                            Most Platforms will be PingPong, but then I realised I could use the Clamped curve to make
+                            the
+                            doors open hiding the door under the terrain
+                            after the animation finishes.
+                        </p>
+                        <p>
+                            I also implemented a enum containing all the different types of a platform: Standard,
+                            Stepper,
+                            and Falling (more will be probabily added).
+                            Stepper is a platform that only move a fixed amount (or step) <strong>per
+                                activation</strong>,
+                            for example the player may have to orient
+                            some mirrors in the correct way to complete the level (more info coming in the future).
+                            Falling
+                            is pretty self-explanatory.
+                        </p>
+                        <h3>
+                            Conclusion
+                        </h3>
+                        <p>
+                            That pretty much covers it! Thank you for reading and I'll finish this post with some
+                            examples
+                            of how these platforms look in-game (note that
+                            any stuttering is only because these are gifs):
+                        </p>
                 </div>
             </div>
         </div>
