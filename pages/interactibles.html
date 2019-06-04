@@ -32,7 +32,7 @@
         <div class="inner">
             <header class="align-center">
                 <p>Development Notes</p>
-                <h2></h2>
+                <h2>Interactibles</h2>
             </header>
         </div>
     </section>
@@ -88,94 +88,94 @@
 
                     <pre>
                         <code>
-                            public abstract class Interactible: MonoBehaviour {
-                                protected PlayerController player;
-                                protected PlayerStats playerStats;
-                                public string errorString;
-                                public UnityEvent onInteract;
-                                public ErrorTextManager errorText;
-                                [HideInInspector]
-                                public bool activated;
-                                virtual public void Interact() {
-                                    onInteract.Invoke();
-                                }
-                                public virtual void Start() {
-                                    errorText = FindObjectOfType<ErrorTextManager>();
-                                }
-                                public virtual void OnTriggerEnter(Collider other) {
-                                    //get the player controller and stats. Stats are required to check for the number of crystals collected.
-                                    //signals the player controller to show the interact GUI.
-                                    if (other.tag == "Player") {
-                            
-                                            player = GameMainManager.instance.player;
-                                            playerStats = GameMainManager.instance.playerStats;
-                                            player.interactFlag = true;
-                                            player.interactingWith = this;
-                                        }
-                                }
-                                public virtual void OnTriggerExit(Collider other) {
-                                    if (other.tag == "Player") {
-                                        player.interactFlag = false;
-                                        player.interactingWith = null;
-                                    }
-                                }
-                                public virtual void DisplayErrorString() {
-                                    errorText.ShowMessage(errorString);
-                                }
-                            }
-                        </code>
-                    </pre>
+public abstract class Interactible: MonoBehaviour {
+    protected PlayerController player;
+    protected PlayerStats playerStats;
+    public string errorString;
+    public UnityEvent onInteract;
+    public ErrorTextManager errorText;
+    [HideInInspector]
+    public bool activated;
+    virtual public void Interact() {
+        onInteract.Invoke();
+    }
+    public virtual void Start() {
+        errorText = FindObjectOfType<ErrorTextManager>();
+    }
+    public virtual void OnTriggerEnter(Collider other) {
+        //get the player controller and stats. Stats are required to check for the number of crystals collected.
+        //signals the player controller to show the interact GUI.
+        if (other.tag == "Player") {
 
-                    <p>
-                        Now we need a class that extends the Interactible class. The first that came to mind and that we
-                        used extensively in the levels is a
-                        InteractionSender. This class is an almost direct implementation with an some extra features
-                        tied in like an animator and the ability
-                        to activate or disable the emission of the material it's on.
-                    </p>
+                player = GameMainManager.instance.player;
+                playerStats = GameMainManager.instance.playerStats;
+                player.interactFlag = true;
+                player.interactingWith = this;
+            }
+    }
+    public virtual void OnTriggerExit(Collider other) {
+        if (other.tag == "Player") {
+            player.interactFlag = false;
+            player.interactingWith = null;
+        }
+    }
+    public virtual void DisplayErrorString() {
+        errorText.ShowMessage(errorString);
+    }
+}
+                    </code>
+                </pre>
 
-                    <pre>
-                        <code>
-                            public class InteractionSender : Interactible {
-                                public int earthCollectReq;
-                                public int fireCollectReq;
-                                public int airCollectReq;
-                                public int waterCollectReq;
-                                public float waitTime;
-                                EmissionActivator emissionActivator;
-                                Animator anim;
-                                public override void Start() {
-                                    base.Start();
-                                    anim = GetComponentInChildren<Animator>();
-                                    emissionActivator = GetComponent<EmissionActivator>();
-                                    errorString = "You need more crystals!";
-                                }
-                                public override void Interact() {
-                                    //check if the player is allowed to interact based on the number of crystals collected. if he has them then call the superclass.Interact()
-                                    if (CheckCrystals()) {
-                                        base.Interact();
-                                        activated = true;
-                                        //this code could be removed due to the unity events tied to the recievers. They could handle this but since it's pretty standard i'll leave it here.
-                                        if (anim != null) {
-                                            anim.SetTrigger("Active");
-                                        }
-                                        if (emissionActivator != null) {
-                                            emissionActivator.Activate();
-                                        }
-                                    } else {
-                                        DisplayErrorString();
-                                    }
-                                }
-                                private bool CheckCrystals() {
-                                    if (playerStats.earthCrystals >= earthCollectReq
-                                                   && playerStats.fireCrystals >= fireCollectReq
-                                                   && playerStats.airCrystals >= airCollectReq
-                                                   && playerStats.waterCrystals >= waterCollectReq) {
-                                        return true;
-                                    }
-                                    return false;
-                                }
-                            }
+                <p>
+                    Now we need a class that extends the Interactible class. The first that came to mind and that we
+                    used extensively in the levels is a
+                    InteractionSender. This class is an almost direct implementation with an some extra features
+                    tied in like an animator and the ability
+                    to activate or disable the emission of the material it's on.
+                </p>
+
+                <pre>
+                    <code>
+public class InteractionSender : Interactible {
+    public int earthCollectReq;
+    public int fireCollectReq;
+    public int airCollectReq;
+    public int waterCollectReq;
+    public float waitTime;
+    EmissionActivator emissionActivator;
+    Animator anim;
+    public override void Start() {
+        base.Start();
+        anim = GetComponentInChildren<Animator>();
+        emissionActivator = GetComponent<EmissionActivator>();
+        errorString = "You need more crystals!";
+    }
+    public override void Interact() {
+        //check if the player is allowed to interact based on the number of crystals collected. if he has them then call the superclass.Interact()
+        if (CheckCrystals()) {
+            base.Interact();
+            activated = true;
+            //this code could be removed due to the unity events tied to the recievers. They could handle this but since it's pretty standard i'll leave it here.
+            if (anim != null) {
+                anim.SetTrigger("Active");
+            }
+            if (emissionActivator != null) {
+                emissionActivator.Activate();
+            }
+        } else {
+            DisplayErrorString();
+        }
+    }
+    private bool CheckCrystals() {
+        if (playerStats.earthCrystals >= earthCollectReq
+                        && playerStats.fireCrystals >= fireCollectReq
+                        && playerStats.airCrystals >= airCollectReq
+                        && playerStats.waterCrystals >= waterCollectReq) {
+            return true;
+        }
+        return false;
+    }
+}
                         </code>
                     </pre>
 
@@ -187,21 +187,21 @@
 
                     <pre>
                         <code>
-                            public class InteractionReciever : MonoBehaviour {
-                                public UnityEvent onActivate;
-                                public UnityEvent onDisable;
-                                [HideInInspector]
-                                public bool active;
-                            
-                                public virtual void Activate() {
-                                    active = true;
-                                    onActivate.Invoke();
-                                }
-                                public virtual void Disable() {
-                                    active = false;
-                                    onDisable.Invoke();
-                                }
-                            }
+public class InteractionReciever : MonoBehaviour {
+    public UnityEvent onActivate;
+    public UnityEvent onDisable;
+    [HideInInspector]
+    public bool active;
+
+    public virtual void Activate() {
+        active = true;
+        onActivate.Invoke();
+    }
+    public virtual void Disable() {
+        active = false;
+        onDisable.Invoke();
+    }
+}
                             </code>
                     </pre>
 
@@ -252,81 +252,81 @@
 
                         <pre>
                             <code>
-                                public class MovingPlatform : InteractionReciever {
-                                    public enum PlatformType { Standard, Falling, Stepper };
-                                    public bool activateOnStart=true;
-                                    public float speed;
-                                    public AnimationCurve curve;
-                                    public Transform platform;
-                                    public Transform finalPos;
-                                    public Transform startPos;
-                                    public PlatformType platformType;
-                                    public Vector3 stepperDegrees;
-                                    private float curveTime;
-                                    private float curveProgress;
-                                    private bool running;
-                                    private Vector3 oldScale;
-                                    private Rigidbody rigidBody;
-                                    private Transform player;
-                                    private void Start() {
-                                        active = false;
-                                        ResetPosition();
-                                        if (activateOnStart) {
-                                            base.Activate();
-                                        }
-                                        rigidBody = GetComponentInChildren<Rigidbody>();
-                                        player = GameMainManager.instance.player.transform;
-                                    }
-                                    private void FixedUpdate() {
-                                        running=SetRunningState();
-                                        if (running && active) {
-                                            if (platformType == PlatformType.Standard) {
-                                                curveTime += Time.deltaTime * speed;
-                                                curveProgress = curve.Evaluate(curveTime);
-                                                rigidBody.MovePosition(Vector3.LerpUnclamped(startPos.position, finalPos.position, curveProgress));
-                                                rigidBody.MoveRotation(Quaternion.Slerp(startPos.rotation, finalPos.rotation, curveProgress));
-                                            }
-                                        }
-                                    }
-                                    private bool SetRunningState() {
-                                        float distance = Vector3.Distance(transform.position, player.position);
-                                        return distance > 150 ? false : true;
-                                    }
-                                    public void Move() {
-                                        if (platformType == PlatformType.Stepper) {
-                                            Step();
-                                        }
-                                    }
-                                    private void Step() {
-                                        StartCoroutine("MoveStep");
-                                    }
-                                    public IEnumerator MoveStep() {
-                                        curveTime = 0;
-                                        Vector3 rotTarget = platform.rotation.eulerAngles;
-                                        rotTarget += stepperDegrees;
-                                        curveProgress = curve.Evaluate(curveTime);
-                                        while (curveProgress < 1) {
-                                            rigidBody.MovePosition(Vector3.LerpUnclamped(startPos.position, finalPos.position, curveProgress));
-                                            rigidBody.MoveRotation(Quaternion.LerpUnclamped(startPos.rotation, Quaternion.Euler(rotTarget), curveProgress));
-                                            curveTime += Time.deltaTime * speed;
-                                            curveProgress = curve.Evaluate(curveTime);
-                                            yield return null;
-                                        }
-                                    }
-                                    public void ResetPosition() {
-                                        running = false;
-                                        platform.position = startPos.position;
-                                        curveTime = 0;
-                                        curveProgress = 0;
-                                    }
-                                    private void OnDrawGizmosSelected() {
-                                        Gizmos.color = Color.green;
-                                        Gizmos.DrawWireCube(startPos.position, platform.localScale);
-                                        Gizmos.color = Color.red;
-                                        Gizmos.DrawWireCube(finalPos.position, platform.localScale);
-                                    }
-                                
-                                }
+public class MovingPlatform : InteractionReciever {
+    public enum PlatformType { Standard, Falling, Stepper };
+    public bool activateOnStart=true;
+    public float speed;
+    public AnimationCurve curve;
+    public Transform platform;
+    public Transform finalPos;
+    public Transform startPos;
+    public PlatformType platformType;
+    public Vector3 stepperDegrees;
+    private float curveTime;
+    private float curveProgress;
+    private bool running;
+    private Vector3 oldScale;
+    private Rigidbody rigidBody;
+    private Transform player;
+    private void Start() {
+        active = false;
+        ResetPosition();
+        if (activateOnStart) {
+            base.Activate();
+        }
+        rigidBody = GetComponentInChildren<Rigidbody>();
+        player = GameMainManager.instance.player.transform;
+    }
+    private void FixedUpdate() {
+        running=SetRunningState();
+        if (running && active) {
+            if (platformType == PlatformType.Standard) {
+                curveTime += Time.deltaTime * speed;
+                curveProgress = curve.Evaluate(curveTime);
+                rigidBody.MovePosition(Vector3.LerpUnclamped(startPos.position, finalPos.position, curveProgress));
+                rigidBody.MoveRotation(Quaternion.Slerp(startPos.rotation, finalPos.rotation, curveProgress));
+            }
+        }
+    }
+    private bool SetRunningState() {
+        float distance = Vector3.Distance(transform.position, player.position);
+        return distance > 150 ? false : true;
+    }
+    public void Move() {
+        if (platformType == PlatformType.Stepper) {
+            Step();
+        }
+    }
+    private void Step() {
+        StartCoroutine("MoveStep");
+    }
+    public IEnumerator MoveStep() {
+        curveTime = 0;
+        Vector3 rotTarget = platform.rotation.eulerAngles;
+        rotTarget += stepperDegrees;
+        curveProgress = curve.Evaluate(curveTime);
+        while (curveProgress < 1) {
+            rigidBody.MovePosition(Vector3.LerpUnclamped(startPos.position, finalPos.position, curveProgress));
+            rigidBody.MoveRotation(Quaternion.LerpUnclamped(startPos.rotation, Quaternion.Euler(rotTarget), curveProgress));
+            curveTime += Time.deltaTime * speed;
+            curveProgress = curve.Evaluate(curveTime);
+            yield return null;
+        }
+    }
+    public void ResetPosition() {
+        running = false;
+        platform.position = startPos.position;
+        curveTime = 0;
+        curveProgress = 0;
+    }
+    private void OnDrawGizmosSelected() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(startPos.position, platform.localScale);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(finalPos.position, platform.localScale);
+    }
+
+}
                             </code>
                         </pre>
                         <img src="../media/moving_platform_2.jpg" alt="not found" class="image fit">
