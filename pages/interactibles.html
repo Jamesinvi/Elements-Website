@@ -49,10 +49,10 @@
                         current solution.
                         Nevertheless, lets start with Interactibles. My code is setup using mostly Inheritance
                         with some abstract classes that define generic fields and methods for any given type of object.
-                        I am aware that some
-                        (if not most) games use Interfaces way more but I ultimately decided to use inheritance because
-                        I was more used to that
-                        style. So for interactible objects, I created an abstract class from which every object would
+                        we are aware that some
+                        (if not most) games use Interfaces way more but we ultimately decided to use inheritance because
+                        we were more used to that
+                        style. So for interactible objects, we created an abstract class from which every object would
                         derive from.
                     </p>
                     <p>
@@ -68,14 +68,14 @@
                         the player, but that
                         would mean that <strong>every</strong> interactible object would have to keep track of the
                         player individually and doing
-                        that calculation every update. Instead, I used a trigger collider and every time something
+                        that calculation every update. Instead, we used a trigger collider and every time something
                         tagged as "Player" entered the trigger,
                         it would show a simple GUI element to the player.
                     </p>
                     <p>
                         Now it needs to do something when interacted with, and there are a couple of ways to do this.
-                        The choice is between a C# event (my first approach)
-                        or a UnityEvent (what I decided to use). Unity events are basically a wrapper for native C#
+                        The choice is between a C# event (our first approach)
+                        or a UnityEvent (what we decided to use). Unity events are basically a wrapper for native C#
                         events and they are slower (a lot slower) but are perfectly integrated
                         in the Unity editor so they give a very helpful UI where you can drag GameObjects and select
                         which method to call when the event is triggered.
@@ -127,8 +127,8 @@
                     </pre>
 
                     <p>
-                        Now we need a class that extends the Interactible class. The first that came to mind and that I
-                        used extensively in my levels is a
+                        Now we need a class that extends the Interactible class. The first that came to mind and that we
+                        used extensively in the levels is a
                         InteractionSender. This class is an almost direct implementation with an some extra features
                         tied in like an animator and the ability
                         to activate or disable the emission of the material it's on.
@@ -180,7 +180,7 @@
                     </pre>
 
                     <p>
-                        I also implemented an Interaction Reciever class, I know it's slightly redundant but it helps
+                        We also implemented an Interaction Reciever class, I know it's slightly redundant but it helps
                         tie events easily in the inspector and also
                         means that the recieving object isn't tied to the sender to recieve commands.
                     </p>
@@ -209,7 +209,7 @@
                         Moving Platforms
                     </h3>
                     <p>
-                        When I first started implementing platforms, I thought they were easy but I soon realised that
+                        When we first started implementing platforms, we thought they were easy but we soon realised that
                         to get a decent looking moving platform,
                         it would require a little more than antipated. First off, the desired behaviour is that the
                         player moves with the platform, but as illustrated
@@ -222,7 +222,7 @@
                             So basically we'll need make the player controller scripts aware of what is moving towards
                             or away from the player.
                             Now onto the bigger problem: the movement itself.
-                            Here are the methods I tried to implement:
+                            Here are the methods we tried to implement:
                             <ol>
                                 <li>Linearly interpolating between two positions.</li>
                                 <li>Linearly interpolating between two Transforms </li>
@@ -243,7 +243,7 @@
                             would
                             be firing multiple coroutines (<strong>per platform</strong>).
 
-                            The best way to tackle this in my opinion is with animation, more specifically animation
+                            The best way to tackle this in our opinion is with animation, more specifically animation
                             curves.
                             AnimationCurve is a type of variable you can use in Unity that lets
                             you specify any curve you want and then sample or modify it in the script. Here's the Moving
@@ -345,13 +345,13 @@
                                 <li>PingPong: After the curve finishes, it will play the animation backwards, looping
                                     forever </li>
                             </ol>
-                            Most Platforms will be PingPong, but then I realised I could use the Clamped curve to make
+                            Most Platforms will be PingPong, but then we realised we could use the Clamped curve to make
                             the
                             doors open hiding the door under the terrain
                             after the animation finishes.
                         </p>
                         <p>
-                            I also implemented a enum containing all the different types of a platform: Standard,
+                            We also implemented a enum containing all the different types of a platform: Standard,
                             Stepper,
                             and Falling (more will be probabily added).
                             Stepper is a platform that only move a fixed amount (or step) <strong>per

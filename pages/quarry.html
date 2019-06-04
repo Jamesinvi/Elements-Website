@@ -79,9 +79,9 @@
                         Fine tuning the rock placement
                     </h3>
                     <p>
-                        The first change I made to the rock placement algorithm was using a Gaussian distribution for
+                        The first change we made to the rock placement algorithm was using a Gaussian distribution for
                         the size
-                        instead of a random number in the specified range. While that is a solid approach I ultimately
+                        instead of a random number in the specified range. While that is a solid approach we ultimately
                         decided to
                         do things differently. The old version would scale the rocke based on the altitude: the higher
                         up it was, the
@@ -100,20 +100,20 @@
                     </p>
                     <img src="../media/rocks_new.jpg" alt="not found" class="image fit">
                     <p>
-                        My rock and tree placement script has a way to delete all objects and trees but no way of
-                        deciding which to keep so I needed
-                        to find a way to make the rocks and trees I liked stick around. I decided to make all of these
+                        Our rock and tree placement script has a way to delete all objects and trees but no way of
+                        deciding which to keep so we needed
+                        to find a way to make the rocks and trees we liked to stick around. We decided to make all of these
                         objects a child of the "level" object.
-                        This worked but I soon realised that if I was generating trees or rocks again for another
-                        section of the map, it would clutter all my other
-                        areas with new ones. To fix this, I decided to write a script that would destroy any tree or
+                        This worked but we soon realised that generating trees or rocks again for another
+                        section of the map would clutter all the other
+                        areas with new ones. To fix this, we decided to write a script that would destroy any tree or
                         rock it would collide with assuming it wasn't
                         part of the level itself:
                     </p>
                     <h3>Back to the Quarry</h3>
                     <p>
-                        The next thing missing is lava, it's not so simple to pull off so what I did
-                        was to go to substance designer and generate a texture for it. Then I used shader magic to
+                        The next thing missing is lava, it's not so simple to pull off so what we did
+                        was to go to substance designer and generate a texture for it. Then we used shader magic to
                         displace every vertex based on the
                         color value of each pixel in the texture. The final touch was then to add a very slow and subtle
                         movement using a simple sine function:
@@ -125,7 +125,7 @@
                     <img src="../media/quarry_4.jpg" alt="not found" class="image fit">
                     <h3> Occlusion and frustrum culling</h3>
                     <p>
-                        The eagle-eyed will have noticed that the terrain looks a lot sharper. That is simply because I
+                        The eagle-eyed will have noticed that the terrain looks a lot sharper. That is simply because we
                         upped the number of vertices of every chunk
                         The all terrain is now a whopping 32 Million vertices. Naturally that is way more than we want
                         to display on the screen at any given time
@@ -135,7 +135,7 @@
 
                     </p>
                     <p>
-                        I discovered that Unity does this automatically without any work from my part so the only thing
+                        We discovered that Unity does this automatically without any work from our part so the only thing
                         that's left is occlusion culling.
                         Unity provides a pretty solid system of generating volumes that will appear/disappear based on
                         the camera's visibility. What's left
@@ -165,8 +165,8 @@
                     <p>
                         If you've read these two posts you might think the gameplay is completely absent. In truth, it's
                         mostly there, toghether with
-                        obstacles, UI, combat system and inventory system. I will be doing a dive through some of these
-                        in future posts while I work on
+                        obstacles, UI, combat system and inventory system. We will be doing a dive through some of these
+                        in future posts while we work on
                         making them more robust and feature rich. Until then, all I can give you is a very small peak:
                     </p>
                     <img src="../media/test.gif" alt="not found" class="image fit">
