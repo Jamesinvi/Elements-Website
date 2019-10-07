@@ -21,8 +21,9 @@
         <ul class="links">
             <li><a href="../index.html">Home</a></li>
             <li><a href="elements_page.html">About The Project</a></li>
-            <li><a href="terrainandenvironment.html">Terrain & Environment</a></li>
-            <li><a href="quarry.html">The Quarry</a></li>
+            <li><a href="terrain.html">Terrain</a></li>
+            <li><a href="water.html">Water</a></li>
+            <li><a href="grass.html">Grass</a></li>
             <li><a href="interactibles.html">Interactibles</a></li>
         </ul>
     </nav>
@@ -75,41 +76,7 @@
                         the bitmap. We then go back into unity, generate the faceted chunks and apply the texture:
                     </p>
                     <img src="../media/quarry_2.jpg" alt="not found" class="image fit">
-                    <h3>
-                        Fine tuning the rock placement
-                    </h3>
-                    <p>
-                        The first change we made to the rock placement algorithm was using a Gaussian distribution for
-                        the size
-                        instead of a random number in the specified range. While that is a solid approach we ultimately
-                        decided to
-                        do things differently. The old version would scale the rocke based on the altitude: the higher
-                        up it was, the
-                        smaller it would be. This approach however had a problem:
-                    </p>
-                    <img src="../media/rock_diagram.jpg" alt="not found" class="image fit">
-                    <p>
-                        The algorihm would make Rock 2 bigger because it's much closer to sea level. That might seem
-                        like a good thing but
-                        in reality, Rock 1 shouldn't be much smaller than Rock 2 because locally, it's on a pretty high
-                        and steep cliff.
-                        The modified algorithm will check the sorroundings of every rock to find a local minimum (or low
-                        point) and scale the rock
-                        appropriately. It's pretty difficult to get a screenshot of the full range of sizes but here's
-                        what it looks like:
-                    </p>
-                    <img src="../media/rocks_new.jpg" alt="not found" class="image fit">
-                    <p>
-                        Our rock and tree placement script has a way to delete all objects and trees but no way of
-                        deciding which to keep so we needed
-                        to find a way to make the rocks and trees we liked to stick around. We decided to make all of these
-                        objects a child of the "level" object.
-                        This worked but we soon realised that generating trees or rocks again for another
-                        section of the map would clutter all the other
-                        areas with new ones. To fix this, we decided to write a script that would destroy any tree or
-                        rock it would collide with assuming it wasn't
-                        part of the level itself:
-                    </p>
+
                     <h3>Back to the Quarry</h3>
                     <p>
                         The next thing missing is lava, it's not so simple to pull off so what we did

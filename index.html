@@ -26,8 +26,9 @@
 		<ul class="links">
 			<li><a href="index.html">Home</a></li>
 			<li><a href="pages/elements_page.html">About The Project</a></li>
-			<li><a href="pages/terrainandenvironment.html">Terrain & Environment</a></li>
-			<li><a href="pages/quarry.html">The Quarry</a></li>
+			<li><a href="pages/terrain.html">Terrain</a></li>
+			<li><a href="pages/water.html">Water</a></li>
+			<li><a href="pages/grass.html">Grass</a></li>
 			<li><a href="pages/interactibles.html">Interactibles</a></li>
 		</ul>
 	</nav>
@@ -114,20 +115,39 @@
 						<div class="content">
 							<header class="align-center">
 								<p>Development Notes </p>
-								<h2>Terrain & Enviroment</h2>
+								<h2>Terrain</h2>
 							</header>
 							<p> Based on the idea of the four elements, we knew we had to have 4 zones the player would
 								progress through, and after we charted a small universe bacgkround story we decided on a
 								layout of the map. The software we used to generate the map is World Machine. There are
 								newer and shinier tools but this one fit quite well.</p>
 							<footer class="align-center">
-								<a href="pages/terrainandenvironment.html" class="button alt">Learn More</a>
+								<a href="pages/terrain.html" class="button alt">Learn More</a>
 							</footer>
 						</div>
 					</div>
 				</div>
-
 				<div>
+					<div class="box">
+						<div class="image fit">
+							<img src="media/quarry_4.jpg" alt="" />
+						</div>
+						<div class="content">
+							<header class="align-center">
+								<p>Development Notes</p>
+								<h2>Water</h2>
+							</header>
+							<p> Elements has a flat shaded low poly style so you would think that low
+								poly water would fit quite nicely but when we tried it, we weren't satisfied with the
+								result. What we ended up with is probably the polar opposite of low poly: a Tessellation
+								shader.</p>
+							<footer class="align-center">
+								<a href="pages/water.html" class="button alt">Learn More</a>
+							</footer>
+						</div>
+					</div>
+				</div>
+				<!-- <div>
 					<div class="box">
 						<div class="image fit">
 							<img src="media/quarry_4.jpg" alt="" />
@@ -146,7 +166,30 @@
 							</footer>
 						</div>
 					</div>
-				</div>
+				</div> -->
+				<div>
+					<div class="box">
+						<div class="image fit">
+							<img src="media/interactible_4.jpg" alt="" />
+						</div>
+						<div class="content">
+							<header class="align-center">
+								<p>Development Notes</p>
+								<h2>Grass</h2>
+							</header>
+							<p> Our code is setup using mostly Inheritance with some abstract classes that define
+								generic
+								fields and methods for any given type of object. We are aware that some (if not most)
+								games use Interfaces way more but we ultimately decided to use inheritance because we
+								were
+								more used to that style. So for interactible objects, we created an abstract class from
+								which every object would derive from.</p>
+							<footer class="align-center">
+								<a href="/pages/grass.html" class="button alt">Learn More</a>
+							</footer>
+						</div>
+					</div>
+				</div>				
 				<div>
 					<div class="box">
 						<div class="image fit">
@@ -157,9 +200,11 @@
 								<p>Development Notes</p>
 								<h2>Interactibles</h2>
 							</header>
-							<p> Our code is setup using mostly Inheritance with some abstract classes that define generic
+							<p> Our code is setup using mostly Inheritance with some abstract classes that define
+								generic
 								fields and methods for any given type of object. We are aware that some (if not most)
-								games use Interfaces way more but we ultimately decided to use inheritance because we were
+								games use Interfaces way more but we ultimately decided to use inheritance because we
+								were
 								more used to that style. So for interactible objects, we created an abstract class from
 								which every object would derive from.</p>
 							<footer class="align-center">
