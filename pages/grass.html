@@ -45,7 +45,7 @@
                 <div class="content">
                     <p>
                         Most games when it comes to grass use billboards, which are basically a quad (two triangles to form a square) with a grass texture 
-                        painted on top with some alpha to make it transparent. To make grass look nicer you could stick more than
+                        painted on top that always faces the camera. To make grass look nicer you could stick more than
                         a single quad together to give the illusion of having separate blades of grass. A few weeks back I stumbled upon a tutorial by
                         Erik Roystan Ross on a <a href="https://roystan.net/articles/grass-shader.html">Geometry grass shader</a>. Geometry shaders actually generate
                         new triangles at runtime making them an extremely (albeit complex) tool for creating interesting effects.
@@ -164,7 +164,7 @@ float depositSample = tex2Dlod(_DepositTex,float4(pos.xz / _size,0,0));
                         </pre>
                         <p>
                             Now we need to pass this in the fragment function so make sure to add it as a float in the geometryOutput
-                            struct. After that we need to modify che fragment return value to account for it:
+                            struct. After that we need to modify the fragment return value to account for it:
                         </p>
                         <pre>
                             <code>

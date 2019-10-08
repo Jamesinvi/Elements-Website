@@ -52,7 +52,7 @@
                             needs. Based on the idea of the
                             four elements, we knew we had to have 4 zones the player would progress through, and after
                             we charted a
-                            small universe bacgkround story
+                             universe background story
                             we created a layout of the map. The software we used to generate the map from our layout is
                             World Machine.
                             There are
@@ -131,9 +131,11 @@ float height = ((IN.worldPos.y)/_HeightMultiplier);
                         <p>
                             As you can see, everything until now was tied to a parameter from the inspector
                             (_SlopeMultiplier and _HeightMultiplier), doing so
-                            helps you achieve any specific effect without having to edit the shader in the future. To
-                            make the
-                            height percent share the same property,
+                            helps you achieve any specific effect without having to edit the shader in the future.
+                            In the next step we're creating a smooth gradient going from complete darkness at y=0 to
+                            pure
+                            white at y=_HeightMultiplier to help us describe where we are on the terrain (height-wise).
+                            To make this customizable in the inspector,
                             we need to use some math to get a custom range so we create a function to help us to that:
                         </p>
                         <pre>
@@ -148,8 +150,6 @@ float heightPercent = inverseLerp(IN.worldPos.y,0.1, _HeightMultiplier);
                                 </code>
                             </pre>
                         <p>
-                            In this step we're creating a smooth gradient going from complete darkness at y=0 to pure
-                            white at y=_HeightMultiplier.
                             Now we need to sample our texture from World Machine (in the code it's called _DepositTex).
                             In reality, the texture is an RGBA texture
                             with all the colors for the terrain texture, so we only need the alpha channel (where the
@@ -169,6 +169,9 @@ float deposit = tex2D(_DepositTex, IN.uv_DepositTex).a;
                             the biome
                             end while everything else is black, and we do so for every biome. After that is simply a
                             matter of multiplying everything together.
+                        </p>
+                        <p>
+                            This is one of the strips we created when using the colorInRange function:
                         </p>
                         <pre>
                                 <code>
@@ -190,14 +193,19 @@ c *= saturate((grassRange.y * grassRange.x * _GrassColor)
 c *=(IN.vertexColor); //Add support for vertex colors
                                 </code>
                             </pre>
-                        <p>
-                            This is one of the strip we created when using the colorInRange function:
-                        </p>
+
                         <p>
                             And we're done! This shader is actually also very useful to make rocks blend with the
                             terrain because
                             we're using the same material. Here's how it looks:
 
+                        </p>
+                        <p>
+                            Note that to add a quick implementation of vertex color, we just multiplied the color we
+                            already had
+                            with the vertex color (the color is white by default). You could in theory use other
+                            blending formulas
+                            (screen, blend, divide etc.).
                         </p>
                         <h3>
                             Terrain Vegetation & Rocks
@@ -209,23 +217,31 @@ c *=(IN.vertexColor); //Add support for vertex colors
                             solution we came up with was using the Polybrush tool for Unity. This approach had two
                             downsides:
                         </p>
-                            <ol>
-                                <li>Quite slow: requires to paint different trees and rocks all over the large terrain.
-                                </li>
-                                <li>The result can be good, but it heavily depends on your enviromental artist skills.
-                                </li>
-                            </ol>
+                        <ol>
+                            <li>Quite slow: requires to paint different trees and rocks all over the large terrain.
+                            </li>
+                            <li>The result can be good, but it heavily depends on your enviromental artist skills.
+                            </li>
+                        </ol>
                         <p>
                             So we needed a way to place a large number of trees without having all of them
                             needed to be placed by hand so we decided to go with a custom script that
                             places objects randomly
-                            based on slope and height at that particular point. These are the parameters:
+                            based on slope and height at that particular point while still allowing us to add
+                            trees wherever we wanted (if we didn't need this we could have use generative meshes). This
+                            is the inspector view of our script:
                         </p>
 
                         <img src="../media/unity_placeObjects_script.jpg" alt="not found" class="image fit">
 
                         <p>
-                            We use a curve to describe how likely it is for an object to spawn at increasing altitudes.
+                            A good way to place objects is using a Poisson distribution, instead, we used a grid
+                            structure and then randomly
+                            offset each individual object. We chose this approach because it would allow for rocks to
+                            sometimes intersect with neighbours
+                            making the effect more visually appealing. To describe how likely it is for an object to
+                            spawn, we used a curve (Unity's AnimationCurve type)
+                            having spawn chance on the Y axis and height on the X axis.
                             The slope parameter on
                             the other hand is the maximum slope at which the object can spawn.
 
@@ -234,11 +250,15 @@ c *=(IN.vertexColor); //Add support for vertex colors
                             Fine tuning the rock placement
                         </h3>
                         <p>
-                            The algorithm works fine for trees but it's not as good for rocks, so we made some changes. The first change we made 
+                            The algorithm works fine for trees but it's not as good for rocks, so we made some changes.
+                            Note that these are not final models for the rocks so we're aware that we may need to do
+                            some changes
+                            later on but we just need to test the algorithm.
+                            The first change we made
                             to the rock placement algorithm was using a Gaussian distribution for
                             the size
-                            instead of a random number in the specified range. While working correctly, we decided to change things a little.
-                            The old version would scale the rock based on the altitude: the higher
+                            instead of a random number in the specified range. After that, we noticed a problem,
+                            the old version would scale the rock based on the altitude: the higher
                             up it was, the
                             smaller it would be. This approach however had a problem:
                         </p>
@@ -246,22 +266,27 @@ c *=(IN.vertexColor); //Add support for vertex colors
                         <p>
                             The algorihm would make Rock 2 bigger because it's much closer to sea level. That might seem
                             like a good thing but
-                            in reality, Rock 1 shouldn't be much smaller than Rock 2 because locally, it's on a pretty high
+                            in reality, Rock 1 shouldn't be much smaller than Rock 2 because locally, it's on a pretty
+                            high
                             and steep cliff.
-                            The modified algorithm will check the sorroundings of every rock to find a local minimum (or low
+                            The modified algorithm will check the sorroundings of every rock to find a local minimum (or
+                            low
                             point) and scale the rock
-                            appropriately. It's pretty difficult to get a screenshot of the full range of sizes but here's
+                            appropriately. It's pretty difficult to get a screenshot of the full range of sizes but
+                            here's
                             what it looks like:
                         </p>
                         <img src="../media/rocks_new.jpg" alt="not found" class="image fit">
                         <p>
                             Our rock and tree placement script has a way to delete all objects and trees but no way of
                             deciding which to keep so we needed
-                            to find a way to make the rocks and trees we liked to stick around. We decided to make all of these
+                            to find a way to make the rocks and trees we liked to stick around. We decided to make all
+                            of these
                             objects a child of the "level" object.
                             This worked but we soon realised that generating trees or rocks again for another
                             section of the map would clutter all the other
-                            areas with new ones. To fix this, we decided to write a script that would destroy any tree or
+                            areas with new ones. To fix this, we decided to write a script that would destroy any tree
+                            or
                             rock it would collide with assuming it wasn't
                             part of the level itself:
                         </p>
@@ -295,21 +320,10 @@ public class RemoveTerrainObjects : MonoBehaviour
 
                         </p>
 
-                        <img src="../media/trees_1.gif" alt="not found" class="image fit">
 
-                        <p>
-                            I guess it's now time to put it all toghether. We added proper rim lighting, some fog, and
-                            some post processing (was alrady there actually)
-                            and we get the final result for the Elements terrain and enviroment. Note that when 3D
-                            models will be added the terrain could be adjusted and
-                            the tree (and rock) placement algorithm could be re-run to get the updated version. Here's
-                            some screenshot of the final result:
-                        </p>
 
                         <img src="../media/elements_terrain_end_result.jpg" alt="not found" class="image fit">
-                        <img src="../media/elements_terrain_end_result2.jpg" alt="not found" class="image fit">
-                        <img src="../media/elements_terrain_end_result3.jpg" alt="not found" class="image fit">
-                        <img src="../media/elements_terrain_end_result4.jpg" alt="not found" class="image fit">
+
 
                     </div>
                 </div>
