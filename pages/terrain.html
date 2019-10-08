@@ -61,7 +61,7 @@
                             World Machine can export files as raw(16bit) wich we then can use in Unity as the Terrain
                             heightmap. This is the result after importing into Unity:
                         </p>
-                        <img src="../media/elements_terrain_unity.jpg" alt="not found" class="image fit">
+                        <img src="../media/1.jpg" alt="not found" class="image fit">
                         <p> For Elements, we're aiming for a low-poly flatshaded style and to
                             achieve this we needed to convert the terrain to a mesh and although this could be achieved
                             by a custom script,
@@ -72,8 +72,7 @@
                             have:
                         </p>
 
-                        <img src="../media/elements_terrain_unity.jpg" alt="not found" class="image fit">
-                        <img src="../media/elements_terrain_unity_close.jpg" alt="not found" class="image fit">
+                        <img src="../media/3.jpg" alt="not found" class="image fit">
 
                         <p>
                             The tool converts the terrain to a mesh dividing it into chunks and automatically creates
@@ -170,9 +169,7 @@ float deposit = tex2D(_DepositTex, IN.uv_DepositTex).a;
                             end while everything else is black, and we do so for every biome. After that is simply a
                             matter of multiplying everything together.
                         </p>
-                        <p>
-                            This is one of the strips we created when using the colorInRange function:
-                        </p>
+
                         <pre>
                                 <code>
 float2 colorInRange(float start, float end, float heightPercent) {
@@ -193,6 +190,21 @@ c *= saturate((grassRange.y * grassRange.x * _GrassColor)
 c *=(IN.vertexColor); //Add support for vertex colors
                                 </code>
                             </pre>
+                        <p>
+                            This is what we're doing when using the colorInRange function:
+                        </p>
+                        <img src="../media/4.jpg" alt="not found" class="image fit">
+                        <p>
+                           And this is how it looks after multiplying all the values:
+                        </p>
+                        <img src="../media/5.jpg" alt="not found" class="image fit">
+                        <p>
+                            So now every time we change something the colors will automatically change:
+                        </p>
+                        <video width="100%" height="50%" controls>
+                            <source src="../media/video1.mp4" type="video/mp4">
+                          Your browser does not support the video tag.
+                        </video>
 
                         <p>
                             And we're done! This shader is actually also very useful to make rocks blend with the
@@ -200,6 +212,8 @@ c *=(IN.vertexColor); //Add support for vertex colors
                             we're using the same material. Here's how it looks:
 
                         </p>
+                        <img src="../media/6.jpg" alt="not found" class="image fit">
+
                         <p>
                             Note that to add a quick implementation of vertex color, we just multiplied the color we
                             already had
@@ -276,7 +290,7 @@ c *=(IN.vertexColor); //Add support for vertex colors
                             here's
                             what it looks like:
                         </p>
-                        <img src="../media/rocks_new.jpg" alt="not found" class="image fit">
+                        <img src="../media/7.jpg" alt="not found" class="image fit">
                         <p>
                             Our rock and tree placement script has a way to delete all objects and trees but no way of
                             deciding which to keep so we needed
@@ -313,18 +327,6 @@ public class RemoveTerrainObjects : MonoBehaviour
 }
                             </code>
                         </pre>
-                        <img src="../media/unity_placeObjects_result_1.jpg" alt="not found" class="image fit">
-                        <img src="../media/unity_placeObjects_result_2.jpg" alt="not found" class="image fit">
-
-                        <p>
-
-                        </p>
-
-
-
-                        <img src="../media/elements_terrain_end_result.jpg" alt="not found" class="image fit">
-
-
                     </div>
                 </div>
             </div>

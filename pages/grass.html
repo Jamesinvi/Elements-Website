@@ -132,10 +132,10 @@ float dist = distance(_WorldSpaceCameraPos, mul(unity_ObjectToWorld, IN[0].verte
                         since we're doing that at the tessellation level, but the tessellation is <b>only</b> responsible for further subdivision of the mesh,
                         and doesn't stop the geometry shader from generating the grass blades. So what would happen is this: tessellation wouldn't occur because
                         the camera is too far away but the geometry step would still generate a grass blade <b>for every triangle</b>. However, since there's very few
-                        triangles without tessellation you would have one grass blade every 10 or so meters. This is an example:
+                        triangles without tessellation you would have one grass blade every 10 or so meters. This is an example (fog is disabled to help you see):
                     </p>
 
-                    <img src="../media/moving_platform_1.jpg" alt="not found" class="image fit">
+                    <img src="../media/12.jpg" alt="not found" class="image fit">
 
                         <p>
                             So now we need a way to check if all these values are within the range we want (most of them are tied to the inspector). To make a single
@@ -174,6 +174,8 @@ float4 col = lerp(_BottomColor, (_TopColor + (i.deposit * _DepositColor)) * ligh
                         <p>
                             And we're done!
                         </p>
+                        <img src="../media/13.jpg" alt="not found" class="image fit">
+
                         <h3>
                             Final Touch
                         </h3>
@@ -211,6 +213,14 @@ if (shouldCreateGrass==5){
                         <p>
                             And we're done! This is an example of a path with no grass:
                         </p>
+                        <img src="../media/14.jpg" alt="not found" class="image fit">
+                        <p>
+                            Here's a video of the grass in action:
+                        </p>
+                        <video width="100%" height="50%" controls>
+                            <source src="../media/video3.mp4" type="video/mp4">
+                          Your browser does not support the video tag.
+                        </video>
                 </div>
             </div>
         </div>

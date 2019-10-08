@@ -68,6 +68,10 @@
                         This gif shows the difference between just using the mesh and having tessellation enabled:
 
                     </p>
+                    <video width="100%" height="50%" controls>
+                        <source src="../media/video2.mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
                     <p>
                         Tessellation is pretty complex when doing it from scratch but we can use the power surface
                         shaders to just tell Unity
@@ -167,7 +171,7 @@ void vert(inout appdata_full vertexData) {
                         </code>
                     </pre>
                     <p>
-                        And this is the result:
+                        The result should be pretty similar to the gif showcasing the tessellation.
                     </p>
                     <h3>
                         Foamline
@@ -218,6 +222,8 @@ o.Albedo += saturate(falloff);
                         <p>
                             So this is what we have so far:
                         </p>
+                        <img src="../media/10.jpg" alt="not found" class="image fit">
+
                         <p>
                             This looks ok but there's no texture to it. We could use a standard texture and sample it but to make it feel 
                             more dynamic we decided to use a Voronoi pattern. As we did for the gerstnerWave we could in theory just use the
@@ -315,6 +321,10 @@ o.Albedo+= secondFalloff * _UnderwaterFog;
                             And this is our final water! The code is slightly messy expecially at the end with that secondFalloff variable 
                             but it does the job at showcasing our shader.
                         </p>
+                        <video width="100%" height="50%" controls>
+                            <source src="../media/video4.mp4" type="video/mp4">
+                          Your browser does not support the video tag.
+                        </video>
                 </div>
             </div>
         </div>
