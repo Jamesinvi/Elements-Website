@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Main Character</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-153167872-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-153167872-1');
+    </script>
+</head>
+
+<body class="subpage">
+
+    <!-- Header -->
+    <header id="header">
+        <div class="logo"><a href="../index.html">Elements <span>by JAMES KARRAN</span></a></div>
+        <a href="#menu">Menu</a>
+
+    </header>
+
+    <!-- Nav -->
+    <nav id="menu">
+        <ul class="links">
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="elements_page.html">About The Project</a></li>
+            <li><a href="terrain.html">Terrain</a></li>
+            <li><a href="water.html">Water</a></li>
+            <li><a href="grass.html">Grass</a></li>
+            <li><a href="interactibles.html">Interactibles</a></li>
+            <li><a href="main_char_animation.html">Main Character</a></li>
+        </ul>
+    </nav>
+
+    <!-- One -->
+    <section id="One" class="wrapper style3">
+        <div class="inner">
+            <header class="align-center">
+                <p>Development Notes</p>
+                <h2>Main Character</h2>
+            </header>
+        </div>
+    </section>
+
+    <!-- Two -->
+    <section id="two" class="wrapper style">
+        <div class="inner">
+            <div class="box">
+                <div class="content">
+                    <h3>The original Design</h3>
+                    <p>
+                        Creating a character for Elements was by far the hardest challenge so far and while the character model isn't completely 
+                        finished, it's enough to rig and animate, as you'll see. We went through several iterations before finally settling on 
+                        version 7, I'll show here some of the previous attempts (most of them are not complete because we abandoned them before finishing them).
+
+                    </p>
+                    <div class="gallery">
+                        <img src="../media/19.JPG" alt="" />
+                        <img src="../media/20.JPG" alt="" />
+                        <img src="../media/21.JPG" alt="" />
+                        <img src="../media/23.JPG" alt="" />
+                    </div>
+                    <p>
+                        As shown in the images, the design had a major overhaul after the second image. This change was due to a concept art my friend did and we both liked.
+                        This is the concept art together with the (almost finished) model: 
+                    </p>
+                    <div class="gallery">
+                        <img src="../media/24.JPG" alt="" />
+                        <img src="../media/22.JPG" alt="" />
+                    </div>
+                    <p>
+                        In case you're wondering "what about the face?", we're still trying different ways of making it work, although early efforts seem to suggest that
+                        even no face could be a good option if the rest of the character is animated to account for it. The goal is to avoid having to hand animate face bones,
+                        mainly because we don't have a full time animator on the team.
+                    </p>
+                    <h3>Rigging</h3>
+                    <p>
+                        Rigging is an ardous process, albeit an important one. We tried different ways to rig the character ranging from a manual approach, Rigify for blender and others.
+                        The best so far seemed to be to hand build a good Rig. However, correctly exporting animations from Blender to Unity isn't so easy if you want Unity to use IK (Inverse
+                        Kinematics), so we found this paid add-on on the blender market: <a href="https://blendermarket.com/products/auto-rig-pro":>Auto-Rig Pro</a>. This add-on is 
+                        <b>amazing</b>, it offers a good quick way to create a perfect rig for your needs, and most importantly it has a dedicated exporter for Unity and Unreal Engine.
+                        The rig we generated with Auto-Rig Pro has these features:
+                    </p>
+                    <ul>
+                        <li>Forward Kinematics for every limb</li>
+                        <li>Inverse Kinematics for every limb</li>
+                        <li>Fist bones (scale a single bone to close hands into fists)</li>
+                        <li>Additional tweak bones to fix any imperfections during animations</li>
+                    </ul>
+                    <h3>Animations</h3>
+                    <p>
+                        As stated before, we don't have an animator on the team, and this was a big problem and it seems there's no real solution here other than using stock animations (like Mixamo).
+                        So I started to learn some of the basics of animation and to be honest, early attempts we're pretty demoralizing. After a couple months of trying (and failing),
+                        I managed to create a walk cycle I was mostly satisfied with. After that, Idle, Running and Jumping animations were very similar.
+                    </p>
+                    <div class="gallery">
+                        <iframe src="https://giphy.com/embed/Aj5LgsiPUTIun9M3E6" width="420" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+                        <iframe src="https://giphy.com/embed/Pvi4ULSeRma5OpQlXl" width="420" height="480" frameBorder="0" class="giphy-embed"allowFullScreen></iframe>
+                        <iframe src="https://giphy.com/embed/dKQNmFWkGQSZ2GKd7T" width="420" height="480" frameBorder="0" class="giphy-embed"allowFullScreen></iframe>
+                        <iframe src="https://giphy.com/embed/5JgYKrmKZWEICByaG3" width="420" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+                    </div>
+                    <h3>Into Unity</h3>
+                    <p>
+                        After exporting with the dedicated FBX exporter, Unity should import the model with the correct bone structure for IK and all the clips included.
+                        The next step is to create the Animator state machine that drives the animations and all the transitions between animations. To get this to work
+                        correctly, we did some research, but good information on this topic is scarce at best, we did however find this very useful Unite (2016) talk from the
+                        Firewatch developers: <a href="https://www.youtube.com/watch?v=8VgQ5PpTqjc">Mecanim Bonsai: Lessons from Firewatch and ReCore</a>.
+                    </p>
+                    <p>
+                        The first step is to create a blend tree that blends between the 3 base animations (Idle, Walk and Run) using movement speed as a variable because using the
+                        movement speed instead of player input prevents the character from mindlessly running into walls. Note that we put this blend tree into a sub-state machine called 
+                        locomotion, this makes it easier to keep everything clean.
+                    </p>
+                    <img src="../media/25.JPG" alt="not found" class="image fit">
+                    <br>
+                    <h4>Jumping</h4>
+                    <p>
+                        For the jump animation, it's not so straightforward. We created the animation as shown before, but the problem of having a single static animation
+                        is that it won't adapt to all (if any) circumstances. To fix this, we tried breaking up the jump animation in two parts: the "going up", and the "falling down" but
+                        unfortunately it still wasn't good enough. Looking for inspiration, we downloaded the 3D DevKit from Unity to see what their implementation was like and we found that
+                        their jump animation was actually split into 6 air animations plus distinct landing animations for every direction. To make things slightly easier, we split the jump animation into 5 clips, respectively:
+
+                    </p>
+                    <ul>
+                        <li>Start of the jump (basically only plays when the player presses jump</li>
+                        <li>Rising animation (animation for going up)</li>
+                        <li>Idle animation (looping animation for when the character is at the jump apex)</li>
+                        <li>Fall animation (looping animation for when the character is falling towards the ground)</li>
+                        <li>Landing animation (animation for when the character touches the ground)</li>
+                    </ul>
+                    <p>
+                        The next step is to put the first four animations in a blend tree using the vertical speed as the parameter and the fifth as a transitional state before returning to the Locomotion state machine.
+                        Note that we created a separate sub-state machine called Airborne that contains all the animations and blendtrees for when the character is in the air. Handling the jump in a blend tree means it can dynamically adapt to the player falling or simply being moved upwards
+                        from external sources and not by just the player pressing the jump button. We then added a ledgegrab animation and put it in the Airborne sub-state machine transition from (and to) the jump blendtree.
+                    </p>
+                    <video width="100%" height="50%" controls>
+                        <source src="../media/main_char_clip.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <h3>Other animations</h3>
+                    <p>
+                        As you can tell from the previous video, there are some other animations in the animator such as "Punch" and "Spin",
+                        those are relatively simple and they transition using a trigger (you could also use a boolean).
+                        Bear in mind, we plan to have different combos when triggering a move from a different state (e.g. Jump-punch or
+                        Jump-spin combo).
+                        Here are the punch and spin
+                        animations in action (they still need tweaking).
+                    </p>
+                    <video width="100%" height="50%" controls>
+                        <source src="../media/main_char_clip_2.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <h3>Inverse Kinematics</h3>
+                    <p>
+                        We originally planned to make use of squash and stretch in our animations, but it turns out that even though Auto-Rig Pro can properly export those kinds of animation,
+                        Unity really doesn't play nice and prevents you from using their humanoid skeleton for any kind of IK so we ditched the squashy animations entirely. 
+                    </p>
+                    <p>
+                        To make use of IK we turned on "IK pass" in the animator layer, we placed scripts that would control specific parts of the character: FeetIK, HeadIK and HandsIK but they all work in exactly the same way. Let's take
+                        a look at FeetIK
+                    </p>
+                    <pre>
+                        <code>
+
+public class FeetIK : MonoBehaviour {
+    public LayerMask detectionMask;
+    public float raycastLength;
+    public bool active;
+    private Animator anim;
+
+    // Called before first Update
+    void Start() {
+        anim = GetComponent<Animator>();
+    }
+
+    // Called by the Animator Component immediately before it updates its internal IK system
+    private void OnAnimatorIK() {
+        if (anim && active) {
+
+            //Set the weights the value defined by animation curves of the animation
+            anim.SetIKPositionWeight(AvatarIKGoal.LeftFoot, anim.GetFloat("LeftFootIKWeight"));
+            anim.SetIKRotationWeight(AvatarIKGoal.LeftFoot, anim.GetFloat("LeftFootIKWeight"));
+
+            anim.SetIKPositionWeight(AvatarIKGoal.RightFoot, anim.GetFloat("RightFootIKWeight"));
+            anim.SetIKRotationWeight(AvatarIKGoal.RightFoot, anim.GetFloat("RightFootIKWeight"));
+
+
+            Vector3 upEpsilon = Vector3.up * 0.1f;
+
+            //Left foot
+            Ray ray = new Ray(anim.GetIKPosition(AvatarIKGoal.LeftFoot) + Vector3.up, Vector3.down);
+            RaycastHit hitInfo;
+            if (Physics.Raycast(ray, out hitInfo, raycastLength, detectionMask)) {
+                anim.SetIKPosition(AvatarIKGoal.LeftFoot, hitInfo.point + upEpsilon);
+                anim.SetIKRotation(AvatarIKGoal.LeftFoot, Quaternion.LookRotation(transform.forward, hitInfo.normal));
+            }
+
+            //Right foot (reuse the same ray for efficiency)
+            ray = new Ray(anim.GetIKPosition(AvatarIKGoal.RightFoot) + Vector3.up, Vector3.down);
+            if (Physics.Raycast(ray, out hitInfo, raycastLength, detectionMask)) {
+                anim.SetIKPosition(AvatarIKGoal.RightFoot, hitInfo.point + upEpsilon);
+                anim.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(transform.forward, hitInfo.normal));
+            }
+        }
+    }
+}
+
+                        </code>
+                    </pre>
+                    <p>
+                        Basically, the animator can give us the position of the limbs at any given moment, so we just cast a ray from every foot downwards, looking for 
+                        any solid ground. If the ray finds something, we then snap the position of the feet to the ground. Before we do that, however, we must set the weights
+                        for the IK system (0 meaning the animation just plays normally, 1 meaning the IK is in full effect). We could set that weight to 1 all the time, but that would
+                        lead to the feet snapping to the ground in the middle of a walking or running animation. To fix this, we have to create an animation curve setting these weights for 
+                        the right and the left foot separately as shown here (Note that the animator parameters and the animation curve MUST have the same name). Ideally the weight will only
+                        be 1 when the foot is supposed to be on the ground.
+                    </p>
+                    <img src="../media/26.JPG" alt="not found" class="image fit">
+                    <br>
+                    <p>
+                        This is the a close up of the idle animation before and after applying IK: 
+                    </p>
+                    <div class="gallery">
+                        <img src="../media/27.JPG" alt="" />
+                        <img src="../media/28.JPG" alt="" />
+                    </div>
+                    <p>
+                        After this we tried doing the hands and we decided that ledgegrabbing would be a good way to test this basic IK system and even though it's not perfect we're happy with the results:
+                    </p>
+                    <div class="gallery">
+                        <img src="../media/29.JPG" alt="" />
+                        <img src="../media/30.JPG" alt="" />
+                    </div>
+                    <p>
+                        And that's it! We're pretty happy with the results as they provide a good solid foundation to build upon later on in development. There are still some tweaks to be done to some of the 
+                        transitions and some animations but we'll be doing that as a final polishing pass. If you have any questions please email me and I'll reply as soon as I can. See ya!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="container">
+            <ul class="icons">
+                <li><a href="https://twitter.com/JamesInvi" class="icon fa-twitter"><span
+                            class="label">Twitter</span></a></li>
+                <li><a href="https://www.facebook.com/james.karran" class="icon fa-facebook"><span
+                            class="label">Facebook</span></a></li>
+                <li><a href="mailto:james.invi@gmail.com" class="icon fa-envelope-o"><span
+                            class="label">Email</span></a></li>
+            </ul>
+        </div>
+        <div class="copyright">
+            &copy; Untitled. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/jquery.scrollex.min.js"></script>
+    <script src="../assets/js/skel.min.js"></script>
+    <script src="../assets/js/util.js"></script>
+    <script src="../assets/js/main.js"></script>
+
+</body>
+
+</html>
